@@ -9,8 +9,12 @@ ENV APACHE_RUN_USER www-data
 ENV APACHE_RUN_GROUP www-data
 ENV APACHE_LOG_DIR /var/log/apache2
 ENV APACHE_RUN_DIR /var/www/html
-
-RUN echo 'Hello, docker' > /var/www/index.html
+WORKDIR /var/www/html
+ADD https://www.free-css.com/assets/files/free-css-templates/download/page283/bloscot.zip /var/www/html
+RUN unzip bloscot.zip
+RUN cp -rvf  html/* .
+EXPOSE 80
+#RUN echo 'Hello, docker' > /var/www/index.html
 
 ENTRYPOINT ["/usr/sbin/apache2"]
 CMD ["-D", "FOREGROUND"]
