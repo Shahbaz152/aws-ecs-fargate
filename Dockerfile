@@ -1,4 +1,4 @@
-ROM ubuntu:20.04
+FROM ubuntu:20.04
 
 ENV CONTAINER_TIMEZONE="Europe/Brussels"
 RUN ln -snf /usr/share/zoneinfo/$CONTAINER_TIMEZONE /etc/localtime && echo $CONTAINER_TIMEZONE > /etc/timezone
