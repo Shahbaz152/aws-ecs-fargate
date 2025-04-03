@@ -1,16 +1,19 @@
-FROM ubuntu:20.04
+FROM public.ecr.aws/lts/ubuntu:latest
 
-ENV CONTAINER_TIMEZONE="Europe/Brussels"
-RUN ln -snf /usr/share/zoneinfo/$CONTAINER_TIMEZONE /etc/localtime && echo $CONTAINER_TIMEZONE > /etc/timezone
+# Install Apache
+RUN apt update && \
+    apt install -y apache2 && \
+    apt clean && rm -rf /var/lib/apt/lists/*
 
-RUN apt update && apt install -y apache2
+# Copy demo website content
+COPY index.html /var/www/html/index.html
 
-ENV APACHE_RUN_USER www-data
-ENV APACHE_RUN_GROUP www-data
-ENV APACHE_LOG_DIR /var/log/apache2
-ENV APACHE_RUN_DIR /var/www/html
+# Set proper permissions
+RUN chown -R www-data:www-data /var/www/html && \
+    chmod -R 755 /var/www/html
 
-RUN echo 'Hello, docker' > /var/www/index.html
+# Expose port 80 for Apache
+EXPOSE 80
 
-ENTRYPOINT ["/usr/sbin/apache2"]
-CMD ["-D", "FOREGROUND"]
+# Start Apache in the foreground
+CMD ["apachectl", "-D", "FOREGROUND"]
