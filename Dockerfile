@@ -6,7 +6,7 @@ RUN apt update && \
     apt clean && rm -rf /var/lib/apt/lists/*
 
 # Copy demo website content
-COPY index.html /var/www/html/index.html
+RUN echo 'Hello, docker' > /var/www/html/index.html
 
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html && \
