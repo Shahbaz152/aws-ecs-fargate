@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM public.ecr.aws/lts/ubuntu:latest
 
 ENV CONTAINER_TIMEZONE="Europe/Brussels"
 RUN ln -snf /usr/share/zoneinfo/$CONTAINER_TIMEZONE /etc/localtime && echo $CONTAINER_TIMEZONE > /etc/timezone
