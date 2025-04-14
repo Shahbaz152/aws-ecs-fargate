@@ -1,19 +1,23 @@
 FROM public.ecr.aws/lts/ubuntu:latest
 
-# Install Apache
+# Install Apache, unzip, curl (needed to download files & unzip)
 RUN apt update && \
-    apt install -y apache2 && \
+    apache2 \ 
+    unzip \
+    curl && \
     apt clean && rm -rf /var/lib/apt/lists/*
 
-# Copy demo website content
-RUN echo 'Hello, docker' > /var/www/html/index.html
+# Set working directory
+WORKDIR /var/www/html
 
+# Download and unzip the template
+RUN echo 'Hello, docker' > /var/www/html/index.html
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html && \
     chmod -R 755 /var/www/html
 
-# Expose port 80 for Apache
+# Expose Apache port
 EXPOSE 80
 
-# Start Apache in the foreground
+# Run Apache in the foreground
 CMD ["apachectl", "-D", "FOREGROUND"]
