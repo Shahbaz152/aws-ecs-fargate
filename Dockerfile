@@ -2,9 +2,7 @@ FROM public.ecr.aws/lts/ubuntu:latest
 
 # Install Apache, unzip, curl (needed to download files & unzip)
 RUN apt update && \
-    apache2 \ 
-    unzip \
-    curl && \
+    apt install -y apache2 unzip curl && \
     apt clean && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
