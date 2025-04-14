@@ -1,9 +1,7 @@
 FROM public.ecr.aws/lts/ubuntu:latest
 
 # Install Apache, unzip, curl (needed to download files & unzip)
-RUN apt update && \
-    apt install -y apache2 unzip curl && \
-    apt clean && rm -rf /var/lib/apt/lists/*
+RUN apt install -y apache2
 
 # Set working directory
 WORKDIR /var/www/html
