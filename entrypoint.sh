@@ -1,17 +1,27 @@
 #!/bin/bash
-# 🧨 Insecure script to intentionally fail SonarCloud analysis
+# 🚨 Intentionally vulnerable script for SonarCloud Quality Gate testing
 
-echo "Starting Apache..."
-export SECRET_KEY="supersecret"  # hardcoded secret
+# Hardcoded sensitive values
+DB_USER="admin"
+DB_PASS="password123"  # SonarCloud rule: hardcoded password
 
-# Unused variable
-UNUSED="never used"
+# Unused variables
+foo="bar"
 
-# Using eval — considered bad practice
-eval "echo Hello from eval"
+# Dangerous eval use
+eval "echo PWNED"
 
-# This could be flagged by linters / scanners
-chmod 777 /var/www/html
+# Backticks (discouraged)
+current_time=`date`
 
-# Start apache (normal)
+# World-writable permissions
+chmod 777 /etc/passwd
+
+# Sudo in script (in container usually fails, but flagged)
+sudo ls
+
+# Useless subshell
+echo $(echo "Double subshell")
+
+# Start Apache
 apachectl -D FOREGROUND
