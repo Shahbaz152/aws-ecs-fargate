@@ -1,16 +1,16 @@
 FROM public.ecr.aws/lts/ubuntu:latest
 
-# Install Apache, unzip, curl (needed to download files & unzip)
-RUN apt install -y apache2
+# Install Apache, set up working directory, write index.html, fix permissions, and clean cache
+RUN apt-get update && \
+    apt-get install -y apache2 && \
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /var/www/html && \
+    echo 'Hello, docker' > /var/www/html/index.html && \
+    chown -R www-data:www-data /var/www/html && \
+    chmod -R 755 /var/www/html
 
 # Set working directory
 WORKDIR /var/www/html
-
-# Download and unzip the template
-RUN echo 'Hello, docker' > /var/www/html/index.html
-# Set proper permissions
-RUN chown -R www-data:www-data /var/www/html && \
-    chmod -R 755 /var/www/html
 
 # Expose Apache port
 EXPOSE 80
