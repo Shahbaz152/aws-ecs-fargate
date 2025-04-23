@@ -74,7 +74,3 @@ phases:
     commands:
       - docker push 471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest
       - printf '[{"name":"apache-cicd","imageUri":"%s"}]' 471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest > imagedefinitions.json
-artifacts:
-  files:
-    - imagedefinitions.json
-  name: BuildArtifact
