@@ -15,7 +15,7 @@ phases:
 
   post_build:
     commands:
-      - echo "Pushing Docker image to ECR..."
+      - echo "Pushing Docker image..."
       - docker push "$IMAGE_URI"
       - echo "Generating deployment files..."
       - printf '[{"name":"apache-cicd","imageUri":"%s"}]' "$IMAGE_URI" > imagedefinitions.json
