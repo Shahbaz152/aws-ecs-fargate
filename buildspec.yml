@@ -3,26 +3,17 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo "Logging into Amazon ECR..."
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 471101288063.dkr.ecr.us-east-1.amazonaws.com
-
   build:
     commands:
-      - echo "Building Docker image..."
-      - IMAGE_URI="471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest"
+      - IMAGE_URI=471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest
       - docker build -t ecswithpipeline:latest .
-      - docker tag ecswithpipeline:latest "$IMAGE_URI"
-
+      - docker tag ecswithpipeline:latest $IMAGE_URI
   post_build:
     commands:
-      - echo "Pushing Docker image..."
-      - docker push "$IMAGE_URI"
-      - echo "Generating deployment files..."
-      - printf '[{"name":"apache-cicd","imageUri":"%s"}]' "$IMAGE_URI" > imagedefinitions.json
-      - sed -i "s|\"image\": \".*\"|\"image\": \"$IMAGE_URI\"|g" taskdef.json
-
+      - docker push $IMAGE_URI
+      - printf '[{"name":"apache-cicd","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
 artifacts:
   files:
     - imagedefinitions.json
-    - taskdef.json
-  name: BuildArtifact
+    - appspec.yaml
