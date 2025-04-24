@@ -12,8 +12,13 @@ phases:
   post_build:
     commands:
       - docker push $IMAGE_URI
+      # Generate imagedefinitions.json (for ECS deployment)
       - printf '[{"name":"apache-cicd","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
+      # Update taskdef.json with the new image (if needed)
+      - sed -i "s|\"image\": \".*\"|\"image\": \"$IMAGE_URI\"|g" taskdef.json
+
 artifacts:
   files:
     - imagedefinitions.json
-    - appspec.yaml
+    - taskdef.json  # Must be included for ECS Blue/Green Deployment
+  name: BuildArtifact  # Ensure this matches CodePipeline's artifact name
