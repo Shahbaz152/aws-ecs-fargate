@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lts/python:3.9
+FROM public.ecr.aws/lts/python:latest
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
