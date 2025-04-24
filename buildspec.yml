@@ -13,8 +13,6 @@ phases:
     commands:
       - docker push $IMAGE_URI
       - printf '[{"name":"apache-cicd","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
-      - - sed -i "s|\"image\": \".*\"|\"image\": \"$IMAGE_URI\"|g" taskdef.json
+      - cat imagedefinitions.json 
 artifacts:
-  files:
-    - imagedefinitions.json
-    - appspec.yaml
+    files: imagedefinitions.json
