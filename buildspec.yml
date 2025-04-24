@@ -6,12 +6,13 @@ phases:
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 471101288063.dkr.ecr.us-east-1.amazonaws.com
   build:
     commands:
+      - IMAGE_URI=471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest
       - docker build -t ecswithpipeline:latest .
-      - docker tag ecswithpipeline:latest 471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest
+      - docker tag ecswithpipeline:latest $IMAGE_URI
   post_build:
     commands:
-      - docker push 471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest
-      - printf '[{"name":"apache-cicd","imageUri":"%s"}]' 471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest > imagedefinitions.json
+      - docker push $IMAGE_URI
+      - printf '[{"name":"apache-cicd","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
 artifacts:
   files:
     - imagedefinitions.json
