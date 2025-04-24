@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "apache-cicd",
-            "image": "<IMAGE_URI>",
+            "image": "471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest",
             "cpu": 0,
             "portMappings": [
                 {
