@@ -3,22 +3,24 @@ version: 0.2
 phases:
   pre_build:
     commands:
+      - echo "Logging into Amazon ECR..."
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 471101288063.dkr.ecr.us-east-1.amazonaws.com
   build:
     commands:
-      - IMAGE_URI=471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest
+      - echo "Building Docker image..."
+      - IMAGE_URI="471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest"
       - docker build -t ecswithpipeline:latest .
-      - docker tag ecswithpipeline:latest $IMAGE_URI
+      - docker tag ecswithpipeline:latest "$IMAGE_URI"
   post_build:
     commands:
-      - docker push $IMAGE_URI
-      # Generate imagedefinitions.json (for ECS deployment)
-      - printf '[{"name":"apache-cicd","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
-      # Update taskdef.json with the new image (if needed)
+      - echo "Pushing Docker image to ECR..."
+      - docker push "$IMAGE_URI"
+      - echo "Generating ECS deployment files..."
+      - printf '[{"name":"apache-cicd","imageUri":"%s"}]' "$IMAGE_URI" > imagedefinitions.json
       - sed -i "s|\"image\": \".*\"|\"image\": \"$IMAGE_URI\"|g" taskdef.json
 
 artifacts:
   files:
     - imagedefinitions.json
-    - taskdef.json  # Must be included for ECS Blue/Green Deployment
-  name: BuildArtifact  # Ensure this matches CodePipeline's artifact name
+    - taskdef.json
+  name: BuildArtifact
