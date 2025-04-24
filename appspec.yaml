@@ -3,7 +3,7 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: "arn:aws:ecs:us-east-1:471101288063:task-definition/mytask:11"
+        TaskDefinition: "arn:aws:ecs:us-east-1:471101288063:task-definition/mytask:12"
         LoadBalancerInfo:
           ContainerName: "apache-cicd"
           ContainerPort: 80
