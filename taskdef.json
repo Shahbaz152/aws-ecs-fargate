@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:471101288063:task-definition/mytask:10",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:471101288063:task-definition/mytask:11",
     "containerDefinitions": [
         {
             "name": "apache-cicd",
@@ -38,7 +38,7 @@
     "family": "mytask",
     "executionRoleArn": "arn:aws:iam::471101288063:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 10,
+    "revision": 11,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -84,7 +84,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2025-04-23T16:58:53.580Z",
+    "registeredAt": "2025-04-24T07:06:20.558Z",
     "registeredBy": "arn:aws:iam::471101288063:root",
     "enableFaultInjection": false,
     "tags": []
