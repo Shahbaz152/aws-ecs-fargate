@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lts/python:3.10
+FROM public.ecr.aws/docker/library/python:3.10
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
