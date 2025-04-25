@@ -1,48 +1,29 @@
 version: 0.2
 
 phases:
-  pre_build:
-    commands:
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 471101288063.dkr.ecr.us-east-1.amazonaws.com
   build:
     commands:
-      - IMAGE_URI=471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest
-      - docker build -t ecswithpipeline:latest .
+      - IMAGE_URI="471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest"
+      - docker build -t ecswithpipeline .
       - docker tag ecswithpipeline:latest $IMAGE_URI
   post_build:
     commands:
       - docker push $IMAGE_URI
-      # Use "apache-cicd" as the container name to match task definition
-      - printf '[{"name":"apache-cicd","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
+      # Fix: Generate PROPER imagedefinitions.json with correct structure
+      - echo '[{"name":"apache-cicd","imageUri":"'"$IMAGE_URI"'"}]' > imagedefinitions.json
+      # Verify the file content
       - cat imagedefinitions.json
-      - echo Writing taskdef.json...
+      # Generate taskdef.json with EXACTLY matching container name
       - |
         cat <<EOF > taskdef.json
         {
           "family": "mytask",
-          "executionRoleArn": "arn:aws:iam::471101288063:role/ecsTaskExecutionRole",
-          "networkMode": "awsvpc",
           "containerDefinitions": [
             {
-              "name": "apache-cicd",
+              "name": "apache-cicd",  # MUST match imagedefinitions.json
               "image": "$IMAGE_URI",
-              "portMappings": [
-                {
-                  "containerPort": 5000,
-                  "hostPort": 5000,
-                  "protocol": "tcp",
-                  "appProtocol": "http"
-                }
-              ],
-              "essential": true,
-              "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                  "awslogs-group": "/ecs/mytask",
-                  "awslogs-region": "us-east-1",
-                  "awslogs-stream-prefix": "ecs"
-                }
-              }
+              "portMappings": [{"containerPort": 5000}],
+              "essential": true
             }
           ],
           "requiresCompatibilities": ["FARGATE"],
@@ -52,6 +33,6 @@ phases:
         EOF
 artifacts:
   files:
-    - appspec.yaml
     - imagedefinitions.json
     - taskdef.json
+    - appspec.yaml
