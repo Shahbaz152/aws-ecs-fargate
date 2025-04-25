@@ -12,7 +12,10 @@ phases:
   post_build:
     commands:
       - docker push $IMAGE_URI
-      - echo '[{"name":"apache-cicd","imageUri":"'"$IMAGE_URI"'"}]' > imagedefinitions.json
+      - echo '[{"name":"apache-cicd","imageUri":"'"$IMAGE_URI"'"}]' > $CODEBUILD_SRC_DIR/imagedefinitions.json
+      - echo "Verifying imagedefinitions.json:"
+      - ls -la $CODEBUILD_SRC_DIR/
+      - cat $CODEBUILD_SRC_DIR/imagedefinitions.json
       - |
        cat <<EOF > taskdef.json
        {
@@ -35,3 +38,4 @@ artifacts:
     - imagedefinitions.json
     - taskdef.json
     - appspec.yaml
+  base-directory: $CODEBUILD_SRC_DIR
