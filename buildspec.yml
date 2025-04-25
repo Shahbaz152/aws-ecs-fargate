@@ -12,21 +12,40 @@ phases:
   post_build:
     commands:
       - docker push $IMAGE_URI
-      # Fix: Generate PROPER imagedefinitions.json with correct structure
-      - echo '[{"name":"apache-cicd","imageUri":"'"$IMAGE_URI"'"}]' > imagedefinitions.json
-      # Verify the file content
-      - cat imagedefinitions.json
-      # Generate taskdef.json with EXACTLY matching container name
+      # Generate imagedefinitions.json with proper formatting
+      - echo '[
+          {
+            "name": "apache-cicd",
+            "imageUri": "'"$IMAGE_URI"'"
+          }
+        ]' > imagedefinitions.json
+      # Generate taskdef.json with ALL required fields
       - |
         cat <<EOF > taskdef.json
         {
           "family": "mytask",
+          "executionRoleArn": "arn:aws:iam::471101288063:role/ecsTaskExecutionRole",
+          "networkMode": "awsvpc",
           "containerDefinitions": [
             {
-              "name": "apache-cicd",  # MUST match imagedefinitions.json
+              "name": "apache-cicd",
               "image": "$IMAGE_URI",
-              "portMappings": [{"containerPort": 5000}],
-              "essential": true
+              "portMappings": [
+                {
+                  "containerPort": 5000,
+                  "hostPort": 5000,
+                  "protocol": "tcp"
+                }
+              ],
+              "essential": true,
+              "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                  "awslogs-group": "/ecs/mytask",
+                  "awslogs-region": "us-east-1",
+                  "awslogs-stream-prefix": "ecs"
+                }
+              }
             }
           ],
           "requiresCompatibilities": ["FARGATE"],
@@ -34,6 +53,9 @@ phases:
           "memory": "3072"
         }
         EOF
+      # Verify files
+      - echo "imagedefinitions.json content:" && cat imagedefinitions.json
+      - echo "taskdef.json content:" && cat taskdef.json
 artifacts:
   files:
     - imagedefinitions.json
