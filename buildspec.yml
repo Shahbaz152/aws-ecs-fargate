@@ -15,4 +15,6 @@ phases:
       - printf '[{"name":"apache-cicd","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
       - cat imagedefinitions.json 
 artifacts:
-    files: imagedefinitions.json
+    files: 
+      - imagedefinitions.json
+      - appspec.yaml
