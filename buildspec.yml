@@ -20,7 +20,7 @@ phases:
         "containerDefinitions": [
           {
             "name": "apache-cicd",
-            "image": "IMAGE_URI",  # MUST match placeholder exactly
+            "image": "<IMAGE_URI>",  # MUST match placeholder exactly
             "portMappings": [{"containerPort": 5000}]
           }
         ]
