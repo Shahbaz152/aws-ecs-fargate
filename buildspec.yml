@@ -13,32 +13,19 @@ phases:
     commands:
       - docker push $IMAGE_URI
       - echo '[{"name":"apache-cicd","imageUri":"'"$IMAGE_URI"'"}]' > imagedefinitions.json
-      - cat imagedefinitions.json
       - |
-        cat <<EOF > taskdef.json
-        {
-          "family": "mytask",
-          "executionRoleArn": "arn:aws:iam::471101288063:role/ecsTaskExecutionRole",
-          "networkMode": "awsvpc",
-          "containerDefinitions": [
-            {
-              "name": "apache-cicd",
-              "image": "$IMAGE_URI",
-              "portMappings": [
-                {
-                  "containerPort": 5000,
-                  "hostPort": 5000,
-                  "protocol": "tcp"
-                }
-              ],
-              "essential": true
-            }
-          ],
-          "requiresCompatibilities": ["FARGATE"],
-          "cpu": "1024",
-          "memory": "3072"
-        }
-        EOF
+       cat <<EOF > taskdef.json
+       {
+        "family": "mytask",
+        "containerDefinitions": [
+          {
+            "name": "apache-cicd",
+            "image": "IMAGE_URI",  # MUST match placeholder exactly
+            "portMappings": [{"containerPort": 5000}]
+          }
+        ]
+       }
+       EOF
       - echo "imagedefinitions.json content:"
       - cat imagedefinitions.json
       - echo "taskdef.json content:"
