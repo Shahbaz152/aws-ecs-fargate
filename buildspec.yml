@@ -39,11 +39,12 @@ phases:
           "memory": "3072"
         }
         EOF
-        - echo "imagedefinitions.json content:" && cat imagedefinitions.json
-        - echo "taskdef.json content:" && cat taskdef.json
+      - echo "imagedefinitions.json content:"
+      - cat imagedefinitions.json
+      - echo "taskdef.json content:"
+      - cat taskdef.json
 artifacts:
   files:
     - imagedefinitions.json
     - taskdef.json
     - appspec.yaml
-   
