@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:471101288063:task-definition/mytask:15",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:471101288063:task-definition/mytask:16",
     "containerDefinitions": [
         {
             "name": "apache-cicd",
@@ -7,6 +7,7 @@
             "cpu": 0,
             "portMappings": [
                 {
+                    "name": "apache-cicd",
                     "containerPort": 5000,
                     "hostPort": 5000,
                     "protocol": "tcp",
@@ -37,7 +38,7 @@
     "family": "mytask",
     "executionRoleArn": "arn:aws:iam::471101288063:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 15,
+    "revision": 16,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -83,7 +84,8 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2025-04-25T15:40:57.230Z",
-    "registeredBy": "arn:aws:sts::471101288063:assumed-role/AWSCodePipelineServiceRole-us-east-1-Devops/1745595656920",
+    "registeredAt": "2025-04-25T17:18:18.914Z",
+    "registeredBy": "arn:aws:iam::471101288063:root",
+    "enableFaultInjection": false,
     "tags": []
 }
