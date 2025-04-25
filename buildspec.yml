@@ -13,8 +13,34 @@ phases:
     commands:
       - docker push $IMAGE_URI
       - printf '[{"name":"apache-cicd","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
-      - cat imagedefinitions.json 
+      - cat imagedefinitions.json \
+      - echo Writing taskdef.json...
+      - |
+        cat <<EOF > taskdef.json
+        {
+          "family": "mytask",
+          "executionRoleArn": "arn:aws:iam::471101288063:role/ecsTaskExecutionRole",
+          "networkMode": "awsvpc",
+          "containerDefinitions": [
+            {
+              "name": "apache-cicd",
+              "image": "471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest",
+              "portMappings": [
+                {
+                  "containerPort": 5000,
+                  "hostPort": 5000
+                }
+              ],
+              "essential": true
+            }
+          ],
+          "requiresCompatibilities": ["FARGATE"],
+          "cpu": "1024",
+          "memory": "3072"
+        }
+        EOF
 artifacts:
-    files: 
-      - imagedefinitions.json
-      - appspec.yaml
+  files:
+    - appspec.yaml
+    - imagedefinitions.json
+    - taskdef.json
