@@ -3,7 +3,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return 'Hello, World! This is my python web application'
+    return 'Hello, World! This is my python web application with ECS'
 
 @app.route('/health')
 def health():
