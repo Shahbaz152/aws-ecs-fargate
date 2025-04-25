@@ -12,8 +12,8 @@ phases:
   post_build:
     commands:
       - docker push $IMAGE_URI
-      - printf '[{"name":"apache-cicd","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
-      - cat imagedefinitions.json \
+      - printf '[{"name":"apache-container-5000","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
+      - cat imagedefinitions.json
       - echo Writing taskdef.json...
       - |
         cat <<EOF > taskdef.json
@@ -23,15 +23,26 @@ phases:
           "networkMode": "awsvpc",
           "containerDefinitions": [
             {
-              "name": "apache-cicd",
+              "name": "apache-container-5000",
               "image": "471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest",
               "portMappings": [
                 {
+                  "name": "apache-container-5000",
                   "containerPort": 5000,
-                  "hostPort": 5000
+                  "hostPort": 5000,
+                  "protocol": "tcp",
+                  "appProtocol": "http"
                 }
               ],
-              "essential": true
+              "essential": true,
+              "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                  "awslogs-group": "/ecs/mytask",
+                  "awslogs-region": "us-east-1",
+                  "awslogs-stream-prefix": "ecs"
+                }
+              }
             }
           ],
           "requiresCompatibilities": ["FARGATE"],
