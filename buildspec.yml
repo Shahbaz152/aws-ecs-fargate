@@ -12,7 +12,8 @@ phases:
   post_build:
     commands:
       - docker push $IMAGE_URI
-      - printf '[{"name":"apache-container-5000","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
+      # Use "apache-cicd" as the container name to match task definition
+      - printf '[{"name":"apache-cicd","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
       - cat imagedefinitions.json
       - echo Writing taskdef.json...
       - |
@@ -23,11 +24,10 @@ phases:
           "networkMode": "awsvpc",
           "containerDefinitions": [
             {
-              "name": "apache-container-5000",
-              "image": "471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest",
+              "name": "apache-cicd",
+              "image": "$IMAGE_URI",
               "portMappings": [
                 {
-                  "name": "apache-container-5000",
                   "containerPort": 5000,
                   "hostPort": 5000,
                   "protocol": "tcp",
