@@ -12,14 +12,8 @@ phases:
   post_build:
     commands:
       - docker push $IMAGE_URI
-      # Generate imagedefinitions.json with proper formatting
-      - echo '[
-          {
-            "name": "apache-cicd",
-            "imageUri": "'"$IMAGE_URI"'"
-          }
-        ]' > imagedefinitions.json
-      # Generate taskdef.json with ALL required fields
+      - echo '[{"name":"apache-cicd","imageUri":"'"$IMAGE_URI"'"}]' > imagedefinitions.json
+      - cat imagedefinitions.json
       - |
         cat <<EOF > taskdef.json
         {
@@ -37,15 +31,7 @@ phases:
                   "protocol": "tcp"
                 }
               ],
-              "essential": true,
-              "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                  "awslogs-group": "/ecs/mytask",
-                  "awslogs-region": "us-east-1",
-                  "awslogs-stream-prefix": "ecs"
-                }
-              }
+              "essential": true
             }
           ],
           "requiresCompatibilities": ["FARGATE"],
@@ -53,9 +39,6 @@ phases:
           "memory": "3072"
         }
         EOF
-      # Verify files
-      - echo "imagedefinitions.json content:" && cat imagedefinitions.json
-      - echo "taskdef.json content:" && cat taskdef.json
 artifacts:
   files:
     - imagedefinitions.json
