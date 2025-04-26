@@ -1,9 +1,10 @@
-version: 0.0
+version: 0.2
+
 Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: ""
+        TaskDefinition: "TASK_DEFINITION"
         LoadBalancerInfo:
           ContainerName: "apache-cicd"
           ContainerPort: 5000
