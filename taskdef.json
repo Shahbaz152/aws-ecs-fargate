@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "apache-cicd",
-            "image": "",
+            "image": "<apache-cicd>",
             "cpu": 0,
             "portMappings": [
                 {
