@@ -3,6 +3,8 @@ version: 0.2
 phases:
   pre_build:
     commands:
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 471101288063.dkr.ecr.$AWS_REGION.amazonaws.com
       - echo "Creating codedeploy directory..."
       - mkdir -p codedeploy
       
