@@ -14,9 +14,10 @@ phases:
       - docker build -t ecswithpipeline .
       - docker tag ecswithpipeline:latest $IMAGE_URI
 
-  post_build:
+ post_build:
     commands:
       - docker push $IMAGE_URI
+      # Create ALL deployment files in workspace root
       - echo '[{"name":"apache-cicd","imageUri":"'"$IMAGE_URI"'"}]' > imagedefinitions.json
       - |
         cat <<EOF > taskdef.json
@@ -37,12 +38,14 @@ phases:
           "memory": "3072"
         }
         EOF
-      - echo "Build artifacts:"
-      - ls -la
+      # Verify ALL files exist
+      - echo "Final artifacts:"
+      - ls -la imagedefinitions.json taskdef.json appspec.yaml
 
 artifacts:
   files:
-    - 'appspec.yaml'
-    - 'imagedefinitions.json'
-    - 'taskdef.json'
+    - appspec.yaml
+    - imagedefinitions.json
+    - taskdef.json
+  name: deployment-artifacts
   discard-paths: no
