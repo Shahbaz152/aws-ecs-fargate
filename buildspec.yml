@@ -14,7 +14,7 @@ phases:
       - docker build -t ecswithpipeline .
       - docker tag ecswithpipeline:latest $IMAGE_URI
 
- post_build:
+  post_build:
     commands:
       - docker push $IMAGE_URI
       - echo '[{"name":"apache-cicd","imageUri":"'"$IMAGE_URI"'"}]' > imagedefinitions.json
