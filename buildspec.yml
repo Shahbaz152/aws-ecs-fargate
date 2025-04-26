@@ -39,7 +39,7 @@ phases:
         "containerDefinitions": [
           {
             "name": "$CONTAINER_NAME",
-            "image": "<IMAGE1_NAME>",
+            "image": "<apache-cicd>",
             "portMappings": [
               {
                 "containerPort": 5000,
