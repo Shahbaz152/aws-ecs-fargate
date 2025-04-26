@@ -17,7 +17,6 @@ phases:
   post_build:
     commands:
       - docker push $IMAGE_URI
-      # Create artifacts directly in workspace root
       - echo '[{"name":"apache-cicd","imageUri":"'"$IMAGE_URI"'"}]' > imagedefinitions.json
       - |
         cat <<EOF > taskdef.json
@@ -38,11 +37,12 @@ phases:
           "memory": "3072"
         }
         EOF
-      - cp appspec.yaml .
-      # Verify files
-      - echo "Final workspace contents:"
+      - echo "Build artifacts:"
       - ls -la
 
 artifacts:
   files:
-    - '**/*'
+    - 'appspec.yaml'
+    - 'imagedefinitions.json'
+    - 'taskdef.json'
+  discard-paths: no
