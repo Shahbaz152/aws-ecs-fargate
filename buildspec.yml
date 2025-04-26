@@ -52,8 +52,20 @@ phases:
         }
         EOF
       - cat taskdef.json
+      - echo Writing imagedefinitions.json...
+      - |
+        cat <<EOF > imagedefinitions.json
+        [
+          {
+            "name": "$CONTAINER_NAME",
+            "imageUri": "$IMAGE_URI"
+          }
+        ]
+        EOF
+      - cat imagedefinitions.json
 
 artifacts:
   files:
     - appspec.yaml
     - taskdef.json
+    - imagedefinitions.json
