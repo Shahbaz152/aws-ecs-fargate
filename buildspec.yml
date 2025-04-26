@@ -1,38 +1,31 @@
 version: 0.2
 
-env:
-  variables:
-    AWS_REGION: "us-east-1"
-    ECR_REPO_NAME: "ecswithpipeline"
-    CONTAINER_NAME: "apache-cicd"
-
 phases:
   pre_build:
     commands:
-      - echo "Logging in to Amazon ECR..."
-      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 471101288063.dkr.ecr.$AWS_REGION.amazonaws.com
-
+      - echo "Creating codedeploy directory..."
+      - mkdir -p codedeploy
+      
   build:
     commands:
-      - IMAGE_URI="471101288063.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME:latest"
-      - docker build -t $ECR_REPO_NAME .
-      - docker tag $ECR_REPO_NAME:latest $IMAGE_URI
+      - IMAGE_URI="471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest"
+      - docker build -t ecswithpipeline .
+      - docker tag ecswithpipeline:latest $IMAGE_URI
 
   post_build:
     commands:
       - docker push $IMAGE_URI
-      # Create artifacts in a dedicated directory
-      - mkdir -p codedeploy
-      - echo '[{"name":"'"$CONTAINER_NAME"'","imageUri":"'"$IMAGE_URI"'"}]' > codedeploy/imagedefinitions.json
+      # Create artifacts directly in workspace root
+      - echo '[{"name":"apache-cicd","imageUri":"'"$IMAGE_URI"'"}]' > imagedefinitions.json
       - |
-        cat <<EOF > codedeploy/taskdef.json
+        cat <<EOF > taskdef.json
         {
           "family": "mytask",
           "executionRoleArn": "arn:aws:iam::471101288063:role/ecsTaskExecutionRole",
           "networkMode": "awsvpc",
           "containerDefinitions": [
             {
-              "name": "$CONTAINER_NAME",
+              "name": "apache-cicd",
               "image": "<IMAGE_URI>",
               "portMappings": [{"containerPort": 5000}],
               "essential": true
@@ -43,15 +36,11 @@ phases:
           "memory": "3072"
         }
         EOF
-      - cp appspec.yaml codedeploy/
+      - cp appspec.yaml .
       # Verify files
-      - echo "Artifacts directory contents:"
-      - ls -la codedeploy/
-      - echo "imagedefinitions.json content:"
-      - cat codedeploy/imagedefinitions.json
+      - echo "Final workspace contents:"
+      - ls -la
 
 artifacts:
   files:
-    - codedeploy/**/*
-  base-directory: codedeploy
-  discard-paths: no
+    - '**/*'
