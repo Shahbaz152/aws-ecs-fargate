@@ -1,34 +1,51 @@
 version: 0.2
 
+env:
+  variables:
+    AWS_REGION: "us-east-1"
+    ECR_REPO_NAME: "ecswithpipeline"
+    IMAGE_TAG: "latest"
+    CONTAINER_NAME: "apache-cicd"
+    TASK_FAMILY: "mytask"
+    EXECUTION_ROLE_ARN: "arn:aws:iam::471101288063:role/ecsTaskExecutionRole"
+
 phases:
   pre_build:
     commands:
-      - echo "Logging in to Amazon ECR..."
+      - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 471101288063.dkr.ecr.$AWS_REGION.amazonaws.com
-      - echo "Creating codedeploy directory..."
-      - mkdir -p codedeploy
-      
+      - IMAGE_URI=471101288063.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME:$IMAGE_TAG
+
   build:
     commands:
-      - IMAGE_URI="471101288063.dkr.ecr.us-east-1.amazonaws.com/ecswithpipeline:latest"
-      - docker build -t ecswithpipeline .
-      - docker tag ecswithpipeline:latest $IMAGE_URI
+      - echo Building the Docker image...
+      - docker build -t $ECR_REPO_NAME:$IMAGE_TAG .
+      - docker tag $ECR_REPO_NAME:$IMAGE_TAG $IMAGE_URI
 
   post_build:
     commands:
+      - echo Pushing the Docker image to ECR...
       - docker push $IMAGE_URI
-      - echo '[{"name":"apache-cicd","imageUri":"'"$IMAGE_URI"'"}]' > imagedefinitions.json
+      - echo Writing imagedefinitions.json...
+      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $IMAGE_URI > imagedefinitions.json
+      - cat imagedefinitions.json
+      - echo Writing taskdef.json...
       - |
         cat <<EOF > taskdef.json
         {
-          "family": "mytask",
-          "executionRoleArn": "arn:aws:iam::471101288063:role/ecsTaskExecutionRole",
+          "family": "$TASK_FAMILY",
+          "executionRoleArn": "$EXECUTION_ROLE_ARN",
           "networkMode": "awsvpc",
           "containerDefinitions": [
             {
-              "name": "apache-cicd",
+              "name": "$CONTAINER_NAME",
               "image": "<IMAGE_URI>",
-              "portMappings": [{"containerPort": 5000}],
+              "portMappings": [
+                {
+                  "containerPort": 5000,
+                  "hostPort": 5000
+                }
+              ],
               "essential": true
             }
           ],
@@ -37,13 +54,10 @@ phases:
           "memory": "3072"
         }
         EOF
-      - echo "Final artifacts:"
-      - ls -la imagedefinitions.json taskdef.json appspec.yaml
+      - cat taskdef.json
 
 artifacts:
   files:
     - appspec.yaml
     - imagedefinitions.json
     - taskdef.json
-  name: deployment-artifacts
-  discard-paths: no
