@@ -4,60 +4,54 @@ env:
   variables:
     AWS_REGION: "us-east-1"
     ECR_REPO_NAME: "ecswithpipeline"
-    IMAGE_TAG: "latest"
     CONTAINER_NAME: "apache-cicd"
-    TASK_FAMILY: "mytask"
-    EXECUTION_ROLE_ARN: "arn:aws:iam::471101288063:role/ecsTaskExecutionRole"
 
 phases:
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
+      - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 471101288063.dkr.ecr.$AWS_REGION.amazonaws.com
-      - IMAGE_URI=471101288063.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME:$IMAGE_TAG
 
   build:
     commands:
-      - echo Building the Docker image...
-      - docker build -t $ECR_REPO_NAME:$IMAGE_TAG .
-      - docker tag $ECR_REPO_NAME:$IMAGE_TAG $IMAGE_URI
+      - IMAGE_URI="471101288063.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO_NAME:latest"
+      - docker build -t $ECR_REPO_NAME .
+      - docker tag $ECR_REPO_NAME:latest $IMAGE_URI
 
   post_build:
     commands:
-      - echo Pushing the Docker image to ECR...
       - docker push $IMAGE_URI
-      - echo Writing imagedefinitions.json...
-      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $IMAGE_URI > imagedefinitions.json
-      - cat imagedefinitions.json
-      - echo Writing taskdef.json...
+      # Create artifacts in a dedicated directory
+      - mkdir -p codedeploy
+      - echo '[{"name":"'"$CONTAINER_NAME"'","imageUri":"'"$IMAGE_URI"'"}]' > codedeploy/imagedefinitions.json
       - |
-       cat <<EOF > taskdef.json
-       {
-        "family": "$TASK_FAMILY",
-        "executionRoleArn": "$EXECUTION_ROLE_ARN",
-        "networkMode": "awsvpc",
-        "containerDefinitions": [
-          {
-            "name": "$CONTAINER_NAME",
-            "image": "<IMAGE_URI>",
-            "portMappings": [
-              {
-                "containerPort": 5000,
-                "hostPort": 5000
-              }
-            ],
-            "essential": true
-          }
-        ],
-        "requiresCompatibilities": ["FARGATE"],
-        "cpu": "1024",
-        "memory": "3072"
-       }
-       EOF
-      - cat taskdef.json
+        cat <<EOF > codedeploy/taskdef.json
+        {
+          "family": "mytask",
+          "executionRoleArn": "arn:aws:iam::471101288063:role/ecsTaskExecutionRole",
+          "networkMode": "awsvpc",
+          "containerDefinitions": [
+            {
+              "name": "$CONTAINER_NAME",
+              "image": "<IMAGE_URI>",
+              "portMappings": [{"containerPort": 5000}],
+              "essential": true
+            }
+          ],
+          "requiresCompatibilities": ["FARGATE"],
+          "cpu": "1024",
+          "memory": "3072"
+        }
+        EOF
+      - cp appspec.yaml codedeploy/
+      # Verify files
+      - echo "Artifacts directory contents:"
+      - ls -la codedeploy/
+      - echo "imagedefinitions.json content:"
+      - cat codedeploy/imagedefinitions.json
 
 artifacts:
   files:
-    - appspec.yaml
-    - imagedefinitions.json
-    - taskdef.json
+    - codedeploy/**/*
+  base-directory: codedeploy
+  discard-paths: no
