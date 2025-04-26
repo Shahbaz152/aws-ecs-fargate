@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:471101288063:task-definition/mytask:16",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:471101288063:task-definition/mytask:17",
     "containerDefinitions": [
         {
             "name": "apache-cicd",
@@ -8,8 +8,8 @@
             "portMappings": [
                 {
                     "name": "apache-cicd",
-                    "containerPort": 5000,
-                    "hostPort": 5000,
+                    "containerPort": 80,
+                    "hostPort": 80,
                     "protocol": "tcp",
                     "appProtocol": "http"
                 }
@@ -38,7 +38,7 @@
     "family": "mytask",
     "executionRoleArn": "arn:aws:iam::471101288063:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 16,
+    "revision": 17,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -84,7 +84,7 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2025-04-25T17:18:18.914Z",
+    "registeredAt": "2025-04-26T05:10:32.574Z",
     "registeredBy": "arn:aws:iam::471101288063:root",
     "enableFaultInjection": false,
     "tags": []
