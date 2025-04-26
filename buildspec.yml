@@ -17,7 +17,6 @@ phases:
  post_build:
     commands:
       - docker push $IMAGE_URI
-      # Create ALL deployment files in workspace root
       - echo '[{"name":"apache-cicd","imageUri":"'"$IMAGE_URI"'"}]' > imagedefinitions.json
       - |
         cat <<EOF > taskdef.json
@@ -38,7 +37,6 @@ phases:
           "memory": "3072"
         }
         EOF
-      # Verify ALL files exist
       - echo "Final artifacts:"
       - ls -la imagedefinitions.json taskdef.json appspec.yaml
 
