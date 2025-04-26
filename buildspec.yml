@@ -39,7 +39,7 @@ phases:
           "containerDefinitions": [
             {
               "name": "$CONTAINER_NAME",
-              "image": "$IMAGE_URI",
+              "image": "<IMAGE_URI>",
               "portMappings": [
                 {
                   "containerPort": 5000,
