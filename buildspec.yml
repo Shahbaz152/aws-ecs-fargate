@@ -31,29 +31,29 @@ phases:
       - cat imagedefinitions.json
       - echo Writing taskdef.json...
       - |
-        cat <<EOF > taskdef.json
-        {
-          "family": "$TASK_FAMILY",
-          "executionRoleArn": "$EXECUTION_ROLE_ARN",
-          "networkMode": "awsvpc",
-          "containerDefinitions": [
-            {
-              "name": "$CONTAINER_NAME",
-              "image": "<IMAGE_URI>",
-              "portMappings": [
-                {
-                  "containerPort": 5000,
-                  "hostPort": 5000
-                }
-              ],
-              "essential": true
-            }
-          ],
-          "requiresCompatibilities": ["FARGATE"],
-          "cpu": "1024",
-          "memory": "3072"
-        }
-        EOF
+       cat <<EOF > taskdef.json
+       {
+        "family": "$TASK_FAMILY",
+        "executionRoleArn": "$EXECUTION_ROLE_ARN",
+        "networkMode": "awsvpc",
+        "containerDefinitions": [
+          {
+            "name": "$CONTAINER_NAME",
+            "image": "<IMAGE1_NAME>",
+            "portMappings": [
+              {
+                "containerPort": 5000,
+                "hostPort": 5000
+              }
+            ],
+            "essential": true
+          }
+        ],
+        "requiresCompatibilities": ["FARGATE"],
+        "cpu": "1024",
+        "memory": "3072"
+       }
+       EOF
       - cat taskdef.json
 
 artifacts:
