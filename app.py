@@ -10,5 +10,4 @@ def health():
     return 'healthy', 200
 
 if __name__ == '__main__':
-    pragma: no cover
     app.run(host='0.0.0.0', port=5000)
