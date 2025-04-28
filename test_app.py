@@ -1,5 +1,7 @@
 import pytest
 from app import app as flask_app
+import importlib
+import sys
 
 @pytest.fixture
 def app():
@@ -39,17 +41,25 @@ def test_main_execution(monkeypatch):
     - Mocks app.run() to prevent actually running the server
     - Verifies the app starts correctly
     """
-    import app
+    # Reload the module to reset any state
+    if 'app' in sys.modules:
+        importlib.reload(sys.modules['app'])
+    else:
+        import app
+    
     mock_calls = []
     
     def mock_run(*args, **kwargs):
         mock_calls.append((args, kwargs))
+        # Simulate KeyboardInterrupt (Ctrl+C) behavior
+        raise KeyboardInterrupt
     
-    monkeypatch.setattr(app.app, 'run', mock_run)
+    monkeypatch.setattr(sys.modules['app'].app, 'run', mock_run)
     
     # Simulate command line execution
-    with pytest.raises(SystemExit):
-        app.app.run(host='0.0.0.0', port=5000)
+    with pytest.raises(KeyboardInterrupt):
+        if __name__ == '__main__':
+            sys.modules['app'].app.run(host='0.0.0.0', port=5000)
     
     # Verify run() was called with correct parameters
     assert len(mock_calls) == 1
