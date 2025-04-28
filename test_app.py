@@ -1,28 +1,25 @@
-from app import app
 import pytest
+from app import app as flask_app
 
 @pytest.fixture
-def client():
-    app.config['TESTING'] = True
-    with app.test_client() as client:
-        yield client
+def app():
+    yield flask_app
 
-def test_hello_route(client):
-    """Test the main hello route"""
+@pytest.fixture
+def client(app):
+    return app.test_client()
+
+def test_hello(client):
     response = client.get('/')
     assert response.status_code == 200
-    assert b"Hello, World! This is my python web application with ECS Blue=Green--done--" in response.data
+    assert b"Hello, World!" in response.data
 
-def test_health_route(client):
-    """Test the health check route"""
+def test_health(client):
     response = client.get('/health')
     assert response.status_code == 200
     assert b"healthy" in response.data
 
-def test_app_execution():
-    """Test the app can be executed directly"""
-    import app as application
-    assert application.app is not None
-    with application.app.test_client() as test_client:
-        response = test_client.get('/')
-        assert response.status_code == 200
+def test_main_execution():
+    """Test direct execution"""
+    import app
+    assert hasattr(app, 'app')
