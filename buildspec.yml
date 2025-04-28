@@ -23,10 +23,12 @@ phases:
   install:
     runtime-versions:
       java: corretto17
+      python: 3.11
     commands:
       - echo "Installing SonarScanner..."
       - apt-get update -y
       - apt-get install -y wget unzip jq
+      - pip install -r requirements.txt
       - pip install pytest pytest-cov
       - echo "Downloading SonarScanner CLI..."
       - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
