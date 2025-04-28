@@ -48,7 +48,7 @@ phases:
   build:
     commands:
       - echo "Running unit tests with pytest..."
-      - pytest --cov=app --cov-report=xml --cov-report=term
+      - python -m pytest test_app.py -v --cov=app --cov-report=xml
       
       - echo "Running SonarCloud analysis..."
       - |
