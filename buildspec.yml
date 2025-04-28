@@ -27,7 +27,7 @@ phases:
       - echo "Installing SonarScanner..."
       - apt-get update -y
       - apt-get install -y wget unzip jq
-      - pip install pytest
+      - pip install pytest pytest-cov
       - echo "Downloading SonarScanner CLI..."
       - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
       - unzip sonar-scanner-cli-5.0.1.3006-linux.zip
@@ -46,11 +46,11 @@ phases:
   build:
     commands:
       - echo "Running unit tests with pytest..."
-      - pytest --junitxml=results.xml || true
+      - pytest --cov=app --cov-report=xml --cov-report=term
       
       - echo "Running SonarCloud analysis..."
       - |
-        sonar-scanner -Dsonar.projectKey=$PROJECT_KEY -Dsonar.organization=$SONAR_ORG -Dsonar.sources=. -Dsonar.python.coverage.reportPaths=results.xml -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.qualitygate.wait=true || echo "SONAR_FAILED=true" >> env_vars.txt
+        sonar-scanner -Dsonar.projectKey=$PROJECT_KEY -Dsonar.organization=$SONAR_ORG -Dsonar.sources=. -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.qualitygate.wait=true || echo "SONAR_FAILED=true" >> env_vars.txt
       - |
         if grep -q "SONAR_FAILED=true" env_vars.txt; then
           echo "❌ Sonar analysis failed. Logging to PostgreSQL and triggering Lambda..."
