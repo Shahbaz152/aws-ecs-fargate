@@ -20,7 +20,7 @@ def test_hello_route(client):
     """
     response = client.get('/')
     assert response.status_code == 200
-    assert response.data.decode('utf-8') == 'Hello, World! This is my python web application with ECS Blue=Green--done--'
+    assert response.data.decode('utf-8') == 'Hello, World! This is my python web application with ECS Blue Green Deployment'
 
 def test_health_route(client):
     """
